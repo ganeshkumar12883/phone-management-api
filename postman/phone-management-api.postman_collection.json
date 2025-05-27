@@ -1,0 +1,365 @@
+{
+	"info": {
+		"_postman_id": "1516873b-23b8-4c5d-a0ff-1377ba330518",
+		"name": "phone-management-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2451858"
+	},
+	"item": [
+		{
+			"name": "GetAllPhoneNumbers",
+			"item": [
+				{
+					"name": "Get All Phone Numbers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetCustomerPhoneNumbers",
+			"item": [
+				{
+					"name": "Get Phone Number(s) For Customer Name - Phone Number Found & Available",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/John",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"John"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Name - Customer Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/Unavailable User",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"Unavailable User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Name - Empty Customer Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/  ",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"  "
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Name - Invalid Format",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/12John",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"12John"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Email Id - Phone Number Found & Available",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/john@example.com",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"john@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Email Id - Unavailable Customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/unavailable@example.com",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"unavailable@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone Number(s) For Customer Email Id - Invalid Format",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/customer/invalid.com@",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"customer",
+								"invalid.com@"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ActivatePhoneNumbers",
+			"item": [
+				{
+					"name": "Activate Phone Number for an Existing Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0412345678\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"John Doe\",\r\n    \"customerEmailId\": \"john.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Phone Number for a New Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0412345680\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"New User\",\r\n    \"customerEmailId\": \"new.user@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Phone Number for a non existing Phone Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0411111111\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"New User\",\r\n    \"customerEmailId\": \"new.user@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Phone Number for already assigned Active Phone Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0412345672\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"New User\",\r\n    \"customerEmailId\": \"new.user@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Phone Number for already assigned Inactive Phone Number",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0412345676\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"New User\",\r\n    \"customerEmailId\": \"new.user@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Phone Number for New Customer With already associated email id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phoneNumber\": \"0412345682\",\r\n    \"phoneNumberType\": \"MOBILE\",\r\n    \"customerName\": \"New User\",\r\n    \"customerEmailId\": \"john@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/phone-api/phone-numbers/activate",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"phone-api",
+								"phone-numbers",
+								"activate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

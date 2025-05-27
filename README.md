@@ -1,44 +1,111 @@
-# 📞 Phone Numbers Management API
+# 📱 Phone Management API
 
-A Spring Boot application for managing check and activate phone number(s) for new/existing customer.
-It also includes basic customer data persistence if a new customer is coming in.
-
-## 🛠 Technical Details
-* Java 17
-* Spring Boot
-* H2 Database (In Memory DB)
-* JPA (Hibernate)
-* Gradle
-* JUnit 5
-* Docker (optional)
+A Spring Boot application to manage customer phone number activation. It includes validation, persistence, retrieval, and supports developer tools like Swagger and Actuator for monitoring.
 
 ---
 
 ## 🚀 Features
 
-- Retrieve all existing phone numbers
-- Retrieve phone numbers by customer name or email id
-- Activate phone numbers for customers existing or new customers
-- Validate input with meaningful error responses
-- H2 in-memory database with schema and sample data preloaded
-- H2 Console enabled for DB inspection
-- Exposes Actuator endpoints (health, info, metrics)
+- ✅ Activate phone numbers with proper validations.
+- 🔎 Retrieve phone numbers by customer name or email.
+- 💾 Uses H2 in-memory database.
+- 📖 Swagger UI for API documentation.
+- 📡 Actuator endpoints for monitoring.
+- 🧪 Unit and Integration tests with JaCoCo test coverage.
+- 🧰 Dev and Prod profiles supported.
 
 ---
 
-## 📦 Requirements
+## 🛠️ Tech Stack
 
 - Java 17+
-- Gradle 8.x
-- (Optional) Docker (for containerized builds)
+- Spring Boot
+- Spring Data JPA
+- Spring Validation
+- H2 Database
+- Springdoc OpenAPI (Swagger)
+- Spring Boot Actuator
+- JUnit 5, JaCoCo
 
 ---
 
-## ▶️ Run Locally
+## 📦 Project Setup
 
-### 🛠 Clone & Build
+### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/phone-management-api.git
-cd phone-management-api
-./mvnw clean package
+   git clone https://github.com/<your-username>/phone-management-api.git
+   cd phone-management-api
+```
+
+### ▶️ Build & Run the Application
+
+```bash
+   ./gradlew clean build
+   
+   ./gradlew bootRun
+```
+
+### Or use IntelliJ IDEA:
+
+Open the project.
+
+Run PhoneManagementApiApplication.java.
+
+### 🛦️ Docker Setup
+Docker config is present at the file 
+```
+Dockerfile
+
+.dockerignore
+```
+
+#### Build the Docker image
+```
+docker build -t phone-management-api .
+```
+#### Run the Docker container
+```
+docker run -p 8080:8080 phone-management-api
+```
+
+### 📚 API Documentation
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+OpenAPI Docs: http://localhost:8080/v3/api-docs
+
+### 🔧 Dev Tools
+H2 Console: http://localhost:8080/h2-console
+
+Actuator Info: http://localhost:8080/actuator/info
+
+Actuator Health: http://localhost:8080/actuator/health
+
+### 📬 Postman Collection
+Postman collection is available in:
+
+```bash
+   postman/phone-management-api.postman_collection.json
+```
+You can import this file into Postman to test endpoints.
+
+### 🧪 Testing & Coverage
+#### Run tests:
+```
+./gradlew test
+```
+
+#### Generate test coverage report:
+```
+./gradlew jacocoTestReport
+```
+
+#### HTML report is located at:
+```
+build/reports/jacoco/test/html/index.html
+```
+
+### 👨‍💻 Developer Info
+##### Name: Ganesh Kumar Vellaichamy
+##### Email: ganeshkumar12883@gmail.com
+
