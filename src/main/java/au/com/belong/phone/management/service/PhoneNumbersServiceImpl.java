@@ -1,9 +1,11 @@
 package au.com.belong.phone.management.service;
 
-import au.com.belong.phone.management.dto.PhoneActivationRequest;
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
-import au.com.belong.phone.management.model.PhoneNumberDetails;
+import au.com.belong.phone.management.dto.request.PhoneActivationRequest;
+import au.com.belong.phone.management.dto.response.CustomerPhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,13 +29,14 @@ public class PhoneNumbersServiceImpl implements PhoneNumbersService {
     }
 
     @Override
-    public List<PhoneNumberDetails> getAllPhoneNumbers() {
-        return phoneNumberQueryService.getAllPhoneNumbers();
+    public Page<PhoneNumbersResponse> getAllPhoneNumbers(Pageable pageable) {
+        return phoneNumberQueryService.getAllPhoneNumbers(pageable);
     }
 
     @Override
-    public List<PhoneNumbersResponse> getPhoneNumbersForCustomer(String customerNameOrEmailId) {
-        return phoneNumberQueryService.getPhoneNumbersForCustomer(customerNameOrEmailId);
+    public Page<CustomerPhoneNumbersResponse> getPhoneNumbersForCustomer(
+            String customerNameOrEmailId, Pageable pageable) {
+        return phoneNumberQueryService.getPhoneNumbersForCustomer(customerNameOrEmailId, pageable);
     }
 
     @Override
@@ -43,8 +46,8 @@ public class PhoneNumbersServiceImpl implements PhoneNumbersService {
         Long phoneNumberId = phoneNumberActivationService.activatePhoneNumber(
                 phoneActivationRequest.getPhoneNumber(), phoneActivationRequest.getPhoneNumberType());
 
-        // Step 2: Customer can be an existing or new. So fetch or create the customer with name
-        Long customerId = customerDetailsService.getOrCreateCustomerDetails(
+        // Step 2: Customer must be already in the records. So fetch the customer with name + email id
+        Long customerId = customerDetailsService.getCustomerDetailsForNameAndEmailId(
                 phoneActivationRequest.getCustomerName(),
                 phoneActivationRequest.getCustomerEmailId());
 

@@ -1,6 +1,6 @@
 package au.com.belong.phone.management.unitTests.service;
 
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.model.PhoneNumberDetails;
 import au.com.belong.phone.management.model.PhoneNumberStatus;
 import au.com.belong.phone.management.model.PhoneNumberType;
@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

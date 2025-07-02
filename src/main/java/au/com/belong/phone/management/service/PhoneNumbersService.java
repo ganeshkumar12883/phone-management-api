@@ -1,16 +1,16 @@
 package au.com.belong.phone.management.service;
 
-import au.com.belong.phone.management.dto.PhoneActivationRequest;
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
-import au.com.belong.phone.management.model.PhoneNumberDetails;
-
-import java.util.List;
+import au.com.belong.phone.management.dto.request.PhoneActivationRequest;
+import au.com.belong.phone.management.dto.response.CustomerPhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PhoneNumbersService {
 
-    List<PhoneNumberDetails> getAllPhoneNumbers();
+    Page<PhoneNumbersResponse> getAllPhoneNumbers(Pageable pageable);
 
-    List<PhoneNumbersResponse> getPhoneNumbersForCustomer(String customerNameOrEmailId);
+    Page<CustomerPhoneNumbersResponse> getPhoneNumbersForCustomer(String customerNameOrEmailId, Pageable pageable);
 
     void activatePhoneNumberForCustomer(PhoneActivationRequest phoneActivationRequest);
 }

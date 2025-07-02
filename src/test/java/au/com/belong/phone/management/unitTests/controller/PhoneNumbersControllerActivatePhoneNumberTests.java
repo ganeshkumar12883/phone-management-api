@@ -1,7 +1,7 @@
 package au.com.belong.phone.management.unitTests.controller;
 
 import au.com.belong.phone.management.controller.PhoneNumbersController;
-import au.com.belong.phone.management.dto.PhoneActivationRequest;
+import au.com.belong.phone.management.dto.request.PhoneActivationRequest;
 import au.com.belong.phone.management.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

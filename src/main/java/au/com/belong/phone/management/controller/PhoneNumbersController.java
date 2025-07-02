@@ -1,19 +1,19 @@
 package au.com.belong.phone.management.controller;
 
-import au.com.belong.phone.management.dto.PhoneActivationRequest;
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
-import au.com.belong.phone.management.model.PhoneNumberDetails;
+import au.com.belong.phone.management.dto.request.PhoneActivationRequest;
+import au.com.belong.phone.management.dto.response.CustomerPhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.service.PhoneNumbersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/phone-api/phone-numbers")
@@ -34,8 +34,8 @@ public class PhoneNumbersController {
             @ApiResponse(responseCode = "200", description = "Phone numbers retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity<List<PhoneNumberDetails>> getAllPhoneNumbers() {
-        return ResponseEntity.ok(phoneNumbersService.getAllPhoneNumbers());
+    public ResponseEntity<Page<PhoneNumbersResponse>> getAllPhoneNumbers(Pageable pageable) {
+        return ResponseEntity.ok(phoneNumbersService.getAllPhoneNumbers(pageable));
     }
 
     @Operation(
@@ -47,9 +47,9 @@ public class PhoneNumbersController {
             @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @GetMapping("/customer/{customerNameOrEmailId}")
-    public ResponseEntity<List<PhoneNumbersResponse>> getPhoneNumbersForCustomer(
-            @PathVariable String customerNameOrEmailId) {
-        return ResponseEntity.ok(phoneNumbersService.getPhoneNumbersForCustomer(customerNameOrEmailId));
+    public ResponseEntity<Page<CustomerPhoneNumbersResponse>> getPhoneNumbersForCustomer(
+            @PathVariable String customerNameOrEmailId, Pageable pageable) {
+        return ResponseEntity.ok(phoneNumbersService.getPhoneNumbersForCustomer(customerNameOrEmailId, pageable));
     }
 
     @Operation(

@@ -1,7 +1,7 @@
 package au.com.belong.phone.management.unitTests.controller;
 
 import au.com.belong.phone.management.controller.PhoneNumbersController;
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.exception.ValidInputRequiredException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +27,7 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
 
     @Test
     void getPhoneNumberDetailsForCustomer_returnsErrorResponse_EmptyCustomerName() throws Exception {
-        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("%20%20%20"))
+        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("%20%20%20", cpnPageable))
                 .willThrow(new ValidInputRequiredException(
                         VALID_INPUT_REQUIRED_CODE, VALID_CUSTOMER_NAME_EMAIL_MESSAGE));
 
@@ -40,7 +40,7 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
 
     @Test
     void getPhoneNumberDetailsForCustomer_returnsErrorResponse_InvalidFormatCustomerName() throws Exception {
-        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("12John"))
+        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("12John", cpnPageable))
                 .willThrow(new ValidInputRequiredException(
                         VALID_INPUT_REQUIRED_CODE, CUSTOMER_NAME_FORMAT_MESSAGE));
 
@@ -55,7 +55,7 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
     @ValueSource(strings = {".com@tempid", "tempId@com", "tempId@@@@com"})
     void getPhoneNumberDetailsForCustomer_returnsErrorResponse_InvalidFormatCustomerEmailId(
             String customerEmailId) throws Exception {
-        given(mockPhoneNumbersService.getPhoneNumbersForCustomer(customerEmailId))
+        given(mockPhoneNumbersService.getPhoneNumbersForCustomer(customerEmailId, cpnPageable))
                 .willThrow(new ValidInputRequiredException(
                         VALID_INPUT_REQUIRED_CODE, CUSTOMER_EMAIL_ID_FORMAT_MESSAGE));
 
@@ -68,7 +68,7 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
 
     @Test
     void getPhoneNumberDetailsForCustomer_returnsErrorResponse_CustomerNotFoundForName() throws Exception {
-        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("New User"))
+        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("New User", cpnPageable))
                 .willThrow(new ValidInputRequiredException(
                         RESOURCE_NOT_FOUND_CODE, CUSTOMER_NOT_FOUND_MESSAGE));
 
@@ -81,7 +81,8 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
 
     @Test
     void getPhoneNumberDetailsForCustomer_returnsErrorResponse_CustomerNotFoundForEmailId() throws Exception {
-        given(mockPhoneNumbersService.getPhoneNumbersForCustomer("new.user@example.com"))
+        given(mockPhoneNumbersService.getPhoneNumbersForCustomer(
+                "new.user@example.com", cpnPageable))
                 .willThrow(new ValidInputRequiredException(
                         RESOURCE_NOT_FOUND_CODE, CUSTOMER_NOT_FOUND_MESSAGE));
 
@@ -92,32 +93,95 @@ class PhoneNumbersControllerGetCustomerPhoneNumbersTest extends BasePhoneNumbers
                 .andExpect(jsonPath("$.timestamp").exists());
     }
 
-    @Test
-    void getPhoneNumberDetailsForCustomer_returnsPhoneNumbersResponse() throws Exception {
-        List<PhoneNumbersResponse> phoneNumbersResponseList = List.of(new PhoneNumbersResponse(
-                "John Smith",
-                "john.smith@example.com",
-                phoneNumberDetailsList));
+    @ParameterizedTest
+    @ValueSource(strings = { "John Smith", "john.smith@example.com" })
+    void getPhoneNumberDetailsForCustomerFullName_returnsPhoneNumbersResponse(String nameOrEmailId) throws Exception {
 
         when(mockPhoneNumbersService.getPhoneNumbersForCustomer(
-                "John Smith")).thenReturn(phoneNumbersResponseList);
+                nameOrEmailId, cpnPageable)).thenReturn(cpnResponsePage);
 
-        mockMvc.perform(get(GET_USER_NUMBER_ENDPOINT + "John Smith"))
+        mockMvc.perform(get(GET_USER_NUMBER_ENDPOINT + nameOrEmailId)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "customerName,asc")
+                        .param("sort", "phoneNumber,asc"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]." +
-                        "customerName").value("John Smith"))
-                .andExpect(jsonPath("$[0]." +
-                        "customerEmailId").value("john.smith@example.com"))
-                .andExpect(jsonPath("$[0]." +
-                        "phoneNumberDetails.size()").value(phoneNumberDetailsList.size()))
-                .andExpect(jsonPath("$[0]." +
-                        "phoneNumberDetails[0].phoneNumber").value("0411111111"))
-                .andExpect(jsonPath("$[0]." +
-                        "phoneNumberDetails[0].phoneNumberType").value("MOBILE"))
-                .andExpect(jsonPath("$[0]." +
-                        "phoneNumberDetails[1].phoneNumber").value("0422222222"))
-                .andExpect(jsonPath("$[0]." +
-                        "phoneNumberDetails[1].phoneNumberType").value("WORK"));
+                .andExpect(jsonPath("$.length()")
+                        .value(cpnPageable.getPageSize()))
+                .andExpect(jsonPath("$[0].customerName")
+                        .value("John Smith"))
+                .andExpect(jsonPath("$[0].customerEmailId")
+                        .value("john.smith@example.com"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse.length()")
+                        .value(2))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumber")
+                        .value("0411111111"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberType")
+                        .value("MOBILE"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberStatus")
+                        .value("ASSIGNED"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberActive")
+                        .value(Boolean.TRUE))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumber")
+                        .value("0422222222"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberType")
+                        .value("WORK"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberStatus")
+                        .value("ASSIGNED"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberActive")
+                        .value(Boolean.TRUE));
+    }
+
+    @Test
+    void getPhoneNumberDetailsForCustomerPartialName_returnsPhoneNumbersResponse() throws Exception {
+
+        when(mockPhoneNumbersService.getPhoneNumbersForCustomer(
+                "John", cpnPageable)).thenReturn(cpnResponsePage);
+
+        mockMvc.perform(get(GET_USER_NUMBER_ENDPOINT + "John")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "customerName,asc")
+                        .param("sort", "phoneNumber,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()")
+                        .value(cpnPageable.getPageSize()))
+                .andExpect(jsonPath("$[0].customerName")
+                        .value("John Smith"))
+                .andExpect(jsonPath("$[0].customerEmailId")
+                        .value("john.smith@example.com"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse.length()")
+                        .value(2))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumber")
+                        .value("0411111111"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberType")
+                        .value("MOBILE"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberStatus")
+                        .value("ASSIGNED"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[0].phoneNumberActive")
+                        .value(Boolean.TRUE))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumber")
+                        .value("0422222222"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberType")
+                        .value("WORK"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberStatus")
+                        .value("ASSIGNED"))
+                .andExpect(jsonPath("$[0].phoneNumbersResponse[1].phoneNumberActive")
+                        .value(Boolean.TRUE))
+                .andExpect(jsonPath("$[1].customerName")
+                        .value("John Williams"))
+                .andExpect(jsonPath("$[1].customerEmailId")
+                        .value("john.williams@example.com"))
+                .andExpect(jsonPath("$[1].phoneNumbersResponse.length()")
+                        .value(1))
+                .andExpect(jsonPath("$[1].phoneNumbersResponse[0].phoneNumber")
+                        .value("0411111114"))
+                .andExpect(jsonPath("$[1].phoneNumbersResponse[0].phoneNumberType")
+                        .value("WORK"))
+                .andExpect(jsonPath("$[1].phoneNumbersResponse[0].phoneNumberStatus")
+                        .value("ASSIGNED"))
+                .andExpect(jsonPath("$[1].phoneNumbersResponse[0].phoneNumberActive")
+                        .value(Boolean.TRUE));
     }
 
 }
