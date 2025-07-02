@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static au.com.belong.phone.management.constants.PhoneManagementConstants.VALID_INPUT_REQUIRED_CODE;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -43,8 +45,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, List<String>>> handleValidationException(MethodArgumentNotValidException ex) {
-        List<String> errors = new ArrayList<>();
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+        /*List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
         }
@@ -52,7 +54,13 @@ public class GlobalExceptionHandler {
         Map<String, List<String>> errorResponse = new HashMap<>();
         errorResponse.put("errors", errors);
 
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);*/
+
+        ValidInputRequiredException cex = new ValidInputRequiredException(
+                VALID_INPUT_REQUIRED_CODE,
+                ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
+        logger.warn("Validation error: {}", ex.getMessage());
+        return buildErrorResponse(cex.getStatusCode(), cex.getErrorCode(), cex.getReason(), cex.getMessage());
     }
 
     // Fallback for any other unhandled exceptions

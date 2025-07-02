@@ -9,13 +9,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.catalina.authenticator.SpnegoAuthenticator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('Operator')")
 @RequestMapping("/phone-api/phone-numbers")
 @Tag(name = "Phone Numbers Management", description = "Managing Phone Numbers With an API")
 public class PhoneNumbersController {
@@ -34,7 +38,8 @@ public class PhoneNumbersController {
             @ApiResponse(responseCode = "200", description = "Phone numbers retrieved successfully")
     })
     @GetMapping
-    public ResponseEntity<List<PhoneNumberDetails>> getAllPhoneNumbers() {
+    public ResponseEntity<List<PhoneNumberDetails>> getAllPhoneNumbers(Authentication authentication) {
+        System.out.println("Authorities: " + authentication.getAuthorities());
         return ResponseEntity.ok(phoneNumbersService.getAllPhoneNumbers());
     }
 
