@@ -1,4 +1,4 @@
-package au.com.belong.phone.management.dto;
+package au.com.belong.phone.management.dto.request;
 
 import au.com.belong.phone.management.validators.ValidFormatCustomerName;
 import io.swagger.v3.oas.annotations.media.Schema;

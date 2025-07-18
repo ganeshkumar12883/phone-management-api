@@ -1,1 +1,3 @@
 rootProject.name = 'phone-management-api'
+
+include 'stub:customer-management-stub'

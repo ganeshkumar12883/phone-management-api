@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,7 +18,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PHONE_NUMBER_DETAILS")
+@Table(
+        name = "PHONE_NUMBER_DETAILS",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"PHONE_NUMBER"}
+        )
+)
 @EntityListeners(AuditingEntityListener.class)
 public class PhoneNumberDetails {
 

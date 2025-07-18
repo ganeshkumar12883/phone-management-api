@@ -1,13 +1,18 @@
 package au.com.belong.phone.management.integrationTests.service;
 
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.CustomerPhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.exception.ValidInputRequiredException;
-import au.com.belong.phone.management.model.PhoneNumberDetails;
+import au.com.belong.phone.management.model.PhoneNumberStatus;
 import au.com.belong.phone.management.model.PhoneNumberType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -16,6 +21,9 @@ import static au.com.belong.phone.management.constants.PhoneManagementConstants.
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.CUSTOMER_NAME_FORMAT_MESSAGE;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.VALID_CUSTOMER_NAME_EMAIL_MESSAGE;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.VALID_INPUT_REQUIRED_CODE;
+import static au.com.belong.phone.management.model.PhoneNumberStatus.ASSIGNED;
+import static au.com.belong.phone.management.model.PhoneNumberType.MOBILE;
+import static au.com.belong.phone.management.model.PhoneNumberType.WORK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,8 +35,23 @@ public class PhoneNumberRetrievalIntegrationTest extends BasePhoneNumbersService
 
     @Test
     void testGetAllPhoneNumbers() {
-        List<PhoneNumberDetails> phoneNumbers = phoneNumbersService.getAllPhoneNumbers();
-        assertEquals(9, phoneNumbers.size());
+        Pageable pageable = PageRequest.of(0
+                , 2
+                , Sort.by("phoneNumber")
+                        .ascending());
+        Page<PhoneNumbersResponse> phoneNumbersPage = phoneNumbersService.getAllPhoneNumbers(pageable);
+
+        assertTrue(phoneNumbersPage.hasContent());
+        assertEquals(pageable.getPageSize(), phoneNumbersPage.getContent().size());
+        assertEquals(pageable.getPageNumber(), phoneNumbersPage.getNumber());
+        assertEquals("0411111111", phoneNumbersPage.getContent().get(0).getPhoneNumber());
+        assertEquals(MOBILE.name(), phoneNumbersPage.getContent().get(0).getPhoneNumberType());
+        assertEquals(ASSIGNED.name(), phoneNumbersPage.getContent().get(0).getPhoneNumberStatus());
+        assertTrue(phoneNumbersPage.getContent().get(0).getPhoneNumberActive());
+        assertEquals("0422222222", phoneNumbersPage.getContent().get(1).getPhoneNumber());
+        assertEquals(WORK.name(), phoneNumbersPage.getContent().get(1).getPhoneNumberType());
+        assertEquals(ASSIGNED.name(), phoneNumbersPage.getContent().get(1).getPhoneNumberStatus());
+        assertTrue(phoneNumbersPage.getContent().get(1).getPhoneNumberActive());
     }
 
     @ParameterizedTest
@@ -84,11 +107,11 @@ public class PhoneNumberRetrievalIntegrationTest extends BasePhoneNumbersService
         assertPhoneNumberDetailsExists(phoneNumberResponse,
                 2,
                 "0411111111",
-                PhoneNumberType.MOBILE);
+                MOBILE);
         assertPhoneNumberDetailsExists(phoneNumberResponse,
                 2,
                 "0422222222",
-                PhoneNumberType.WORK);
+                WORK);
     }
 
     @Test
@@ -111,11 +134,11 @@ public class PhoneNumberRetrievalIntegrationTest extends BasePhoneNumbersService
         assertPhoneNumberDetailsExists(phoneNumberResponse,
                 2,
                 "0411111111",
-                PhoneNumberType.MOBILE);
+                MOBILE);
         assertPhoneNumberDetailsExists(phoneNumberResponse,
                 2,
                 "0422222222",
-                PhoneNumberType.WORK);
+                WORK);
     }
 
     @Test
@@ -124,62 +147,63 @@ public class PhoneNumberRetrievalIntegrationTest extends BasePhoneNumbersService
         createCustomersAndMapping();
 
         // Act: Retrieve phone numbers for the customer email id
-        List<PhoneNumbersResponse> phoneNumbersResponseList =
+        List<CustomerPhoneNumbersResponse> customerPhoneNumbersResponseList =
                 phoneNumbersService.getPhoneNumbersForCustomer("Jane");
 
         // Assert: Check list size
-        assertEquals(2, phoneNumbersResponseList.size());
+        assertEquals(2, customerPhoneNumbersResponseList.size());
 
-        for (PhoneNumbersResponse phoneNumberResponse : phoneNumbersResponseList) {
-            switch(phoneNumberResponse.getCustomerName()) {
+        for (CustomerPhoneNumbersResponse customerPhoneNumbersResponse : customerPhoneNumbersResponseList) {
+            switch(customerPhoneNumbersResponse.getCustomerName()) {
                 case "Jane Doe":
-                    assertCustomerDetailsExists(phoneNumberResponse,
+                    assertCustomerDetailsExists(customerPhoneNumbersResponse,
                             "Jane Doe",
                             "jane.doe@example.com");
-                    assertPhoneNumberDetailsExists(phoneNumberResponse,
+                    assertPhoneNumberDetailsExists(customerPhoneNumbersResponse,
                             2,
                             "0411111111",
-                            PhoneNumberType.MOBILE);
-                    assertPhoneNumberDetailsExists(phoneNumberResponse,
+                            MOBILE);
+                    assertPhoneNumberDetailsExists(customerPhoneNumbersResponse,
                             2,
                             "0422222222",
-                            PhoneNumberType.WORK);
+                            WORK);
                     break;
                 case "Jane Citizen":
-                    assertCustomerDetailsExists(phoneNumberResponse,
+                    assertCustomerDetailsExists(customerPhoneNumbersResponse,
                             "Jane Citizen",
                             "jane.citizen@example.com");
-                    assertPhoneNumberDetailsExists(phoneNumberResponse,
+                    assertPhoneNumberDetailsExists(customerPhoneNumbersResponse,
                             1,
                             "0433333333",
-                            PhoneNumberType.MOBILE);
+                            MOBILE);
                     break;
                 default:
-                    fail("Unexpected customer name: " + phoneNumberResponse.getCustomerName());
+                    fail("Unexpected customer name: " + customerPhoneNumbersResponse.getCustomerName());
             }
         }
     }
 
     // Helper methods for asserting the results
-    private void assertCustomerDetailsExists(PhoneNumbersResponse response,
+    private void assertCustomerDetailsExists(CustomerPhoneNumbersResponse response,
                                     String expectedName,
                                     String expectedEmail) {
         assertEquals(expectedName, response.getCustomerName());
         assertEquals(expectedEmail, response.getCustomerEmailId());
     }
 
-    private void assertPhoneNumberDetailsExists(PhoneNumbersResponse response,
+    private void assertPhoneNumberDetailsExists(List<PhoneNumbersResponse> responseList,
                                          int expectedPhoneCount,
                                          String expectedNumber,
+                                         PhoneNumberStatus expectedStatus,
                                          PhoneNumberType expectedType) {
-        assertNotNull(response.getPhoneNumberDetails());
-        assertEquals(expectedPhoneCount, response.getPhoneNumberDetails().size());
+        assertEquals(expectedPhoneCount, responseList.size());
 
         boolean assertionSuccess = false;
-        for (PhoneNumberDetails phoneNumberDetails : response.getPhoneNumberDetails()) {
-            if (expectedNumber.equals(phoneNumberDetails.getPhoneNumber())) {
-                assertEquals(expectedType, phoneNumberDetails.getPhoneNumberType());
-                assertTrue(phoneNumberDetails.isActive());
+        for (PhoneNumbersResponse response : responseList) {
+            if (expectedNumber.equals(response.getPhoneNumber())) {
+                assertEquals(expectedType.name(), response.getPhoneNumberType());
+                assertEquals(expectedStatus.name(), response.getPhoneNumberStatus());
+                assertTrue(response.getPhoneNumberActive());
                 assertionSuccess = true;
                 break;
             }

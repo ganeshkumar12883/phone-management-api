@@ -1,6 +1,6 @@
 package au.com.belong.phone.management.unitTests.service;
 
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.exception.ResourceNotFoundException;
 import au.com.belong.phone.management.model.CustomerDetails;
 import au.com.belong.phone.management.model.PhoneNumberDetails;

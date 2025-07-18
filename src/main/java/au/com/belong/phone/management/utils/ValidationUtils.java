@@ -7,8 +7,10 @@ import static au.com.belong.phone.management.constants.PhoneManagementConstants.
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.CUSTOMER_EMAIL_SEPARATOR;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.CUSTOMER_NAME_FORMAT_MESSAGE;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.CUSTOMER_NAME_FORMAT_REGEX;
+import static au.com.belong.phone.management.constants.PhoneManagementConstants.CUSTOMER_NAME_FULL_NAME_MESSAGE;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.VALID_CUSTOMER_NAME_EMAIL_MESSAGE;
 import static au.com.belong.phone.management.constants.PhoneManagementConstants.VALID_INPUT_REQUIRED_CODE;
+import static au.com.belong.phone.management.constants.PhoneManagementConstants.WHITE_SPACE_REGEX;
 
 /**
  * Utility class for input validation.
@@ -33,6 +35,10 @@ public class ValidationUtils {
             throw new ValidInputRequiredException(
                     VALID_INPUT_REQUIRED_CODE, CUSTOMER_NAME_FORMAT_MESSAGE);
         }
+    }
+
+    public static Boolean isInputCustomerPartialName(String customerName) {
+        return customerName.split(WHITE_SPACE_REGEX).length < 2;
     }
 
     public static void validateCustomerEmailIdFormat(String customerEmailId) {

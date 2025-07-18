@@ -1,7 +1,7 @@
 package au.com.belong.phone.management.integrationTests.service;
 
-import au.com.belong.phone.management.dto.PhoneActivationRequest;
-import au.com.belong.phone.management.dto.PhoneNumbersResponse;
+import au.com.belong.phone.management.dto.request.PhoneActivationRequest;
+import au.com.belong.phone.management.dto.response.PhoneNumbersResponse;
 import au.com.belong.phone.management.exception.ResourceConflictException;
 import au.com.belong.phone.management.exception.ResourceNotFoundException;
 import au.com.belong.phone.management.model.PhoneNumberDetails;
