@@ -34,7 +34,7 @@ public class PhoneNumbersController {
             summary = "Get all phone numbers",
             description = "Retrieves a list of all phone numbers in the system"
     )
-    @ApiResponses(value = {
+    @ApiResponses(value = { 
             @ApiResponse(responseCode = "200", description = "Phone numbers retrieved successfully")
     })
     @GetMapping
